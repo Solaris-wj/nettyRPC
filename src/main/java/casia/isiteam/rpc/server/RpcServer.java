@@ -2,6 +2,8 @@ package casia.isiteam.rpc.server;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import casia.isiteam.rpc.test.AddService;
 import casia.isiteam.rpc.test.AddServiceImpl;
@@ -26,12 +28,16 @@ public class RpcServer {
 	String host;
 	int port;
 	Map<String,Object> rpcObjects=new HashMap<String, Object>();
+	ExecutorService requestExecutor=Executors.newCachedThreadPool();
 	public RpcServer(String host, int port) {
 		this.host = host;
 		this.port = port;
 		
 	}
 	
+	public final ExecutorService getRequestExecutor() {
+		return requestExecutor;
+	}
 
 	/**
 	 * 添加 接口 和实现类的对应关系
@@ -64,20 +70,23 @@ public class RpcServer {
 				@Override
 				protected void initChannel(SocketChannel ch) throws Exception {
 
-					ChannelPipeline cp = ch.pipeline();
-
-					cp.addLast(new LoggingHandler(LogLevel.INFO));
+					ChannelPipeline cp = ch.pipeline();					
 					
 					// decoder
 					cp.addLast(new LengthFieldBasedFrameDecoder(
 							Integer.MAX_VALUE, 0, Integer.BYTES, 0,
-							Integer.BYTES));					
+							Integer.BYTES));			
+					
+//					cp.addLast(new LoggingHandler(LogLevel.INFO));
+					
 					cp.addLast(new RpcRequestDecoder());
 
 					// encoder
 					cp.addLast(new LengthFieldPrepender(Integer.BYTES));
 					cp.addLast(new RpcResponseEncoder());
-
+					
+		//			cp.addLast(new LoggingHandler(LogLevel.INFO));
+					
 					// business logic
 					cp.addLast(new RpcServerHandler(rpcServer));
 				}

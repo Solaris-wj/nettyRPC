@@ -3,18 +3,26 @@ package casia.isiteam.rpc.common;
 import java.io.Serializable;
 
 public class RpcResponse implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2109117564620632647L;
+	private int ID;
+
 	private Throwable exception;
 	private Object result;
-	
-//	public RpcResponse(Throwable exception, Object result) {
-//		this.exception=exception;
-//		this.result=result;		
-//	}
+
+	public RpcResponse(int ID) {
+		this.ID=ID;
+	}
+	public int getID() {
+		return ID;
+	}
+
+	public void setID(int ID) {
+		this.ID = ID;
+	}
 
 	public Throwable getException() {
 		return exception;
@@ -31,5 +39,5 @@ public class RpcResponse implements Serializable {
 	public void setResult(Object result) {
 		this.result = result;
 	}
-	
+
 }
